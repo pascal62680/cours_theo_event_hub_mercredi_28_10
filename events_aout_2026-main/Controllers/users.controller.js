@@ -20,6 +20,7 @@ async function getById(req, res) {
             return res.status(404).json({ erreur: "Le user n'existe pas" });
         }
         // Je vais chercher tout les évenement ou ce user participe 
+        delete user.us_password;
         const events = await eventModel.getByUserId(id);
         // Je vais chercher tout les commentaire écrit par ce user 
         const comments = await commentModel.getByUserId(id);
@@ -53,6 +54,7 @@ async function update(req, res) {
         }
 
         const updated = await userModel.update(id,user);
+        delete user.us_password;
         res.json({message : "Votre modification à bien été effectué", user});
     } catch (error) {
         res.status(500).json({ error: "Une erreur est survenue lors de la modification du users" })
@@ -65,8 +67,9 @@ async function insert(req, res) {
         if(!body.username || !body.email || !body.password){
             return res.status(403).json({error : "Tout les champs sont requis !"})
         }
+        body.password = bcrypt.hashSync(body.password, 10);
         const inserted = await userModel.insert(body);
-        res.status(201).json({message: "Votre ajout d'utilisateur à bien été fait", user: body})
+        res.status(201).json({message: "Votre ajout d'utilisateur à bien été fait", user: { username: body.username, email: body.email }})
     } catch (error) {
         res.status(500).json({ error: "Une erreur est survenue lors de l'insertion du user" })
     }
@@ -79,6 +82,7 @@ async function deleteUser(req, res) {
         if (!user) {
             return res.status(404).json({ erreur: "Le user n'existe pas" });
         }
+        delete user.us_password;
         const deleted = await userModel.deleteUser(id);
         res.json({message : "Votre suppression à bien été faites", user});
     } catch (error) {

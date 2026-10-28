@@ -62,7 +62,7 @@ async function insert(req, res) {
     try {
         const body = req.body;
         if (!body.title) {
-            res.status(403).json({ error: "Le titre est obligatoire" })
+            return res.status(403).json({ error: "Le titre est obligatoire" })
         }
         const inserted = await eventModel.insert(body);
         res.status(201).json({ message: "Votre insertion à bien été effectué", event: body });

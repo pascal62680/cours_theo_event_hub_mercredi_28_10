@@ -38,6 +38,8 @@ async function login(req, res) {
             return res.status(403).json({ error: "Identifiants incorrect" });
         }
 
+        // On ne met jamais le mot de passe (même hashé) dans le token
+        delete user.us_password;
         const token = jwt.sign({
             user
         },process.env.JWT_SECRET,{expiresIn : "1h"});
